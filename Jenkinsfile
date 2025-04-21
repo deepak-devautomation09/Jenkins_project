@@ -3,14 +3,16 @@ pipeline {
     stages {
         stage ("Install Tools") {
             steps {
-                sh "sudo yum install docker git -y"
-                sh "sudo service docker start"
+                sh "sudo apt-get update && sudo apt-get install docker.io git -y"
+                sh "sudo systemctl start docker"  // Start Docker service using systemctl
             }
         }
         stage ("Clone and Build Image") {
             steps {
-                sh "git clone https://github.com/soumyabiswas37/jenkins_project.git"
-                sh "docker build -t mynewimage:v$BUILD_NUMBER ."
+                sh "git clone https://github.com/deepak-devautomation09/Jenkins_project.git"
+                dir('Jenkins_project') { // Ensure you're in the correct directory for Docker build
+                    sh "docker build -t mynewimage:v$BUILD_NUMBER ."
+                }
             }
         }
         stage("Approval") {
@@ -25,7 +27,7 @@ pipeline {
         }
         stage("Clean Up") {
             steps {
-                cleanWs()
+                cleanWs() // Cleans up the workspace at the end
             }
         }
     }
